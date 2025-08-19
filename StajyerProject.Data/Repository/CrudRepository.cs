@@ -35,8 +35,10 @@ namespace StajyerProject.Data.Repository
                     Durum = request.Durum,
                     Tarih = request.Tarih ?? DateTime.Now
                 };
+
                 await _dbContext.Set<MesajResponse>().AddAsync(entity);
                 await _dbContext.SaveChangesAsync();
+
                 response.Success = true;
                 response.Data = entity;
             }
@@ -45,9 +47,15 @@ namespace StajyerProject.Data.Repository
                 response.Success = false;
                 response.Message = "An error occurred while creating the message.";
                 response.Errors.Add(ex.Message);
+
+                // 🟥 Inner Exception'ı da ekle
+                if (ex.InnerException != null)
+                    response.Errors.Add("INNER: " + ex.InnerException.Message);
             }
+
             return response;
         }
+
 
         public async Task<ApiResponse<MesajResponse>> UpdateAsyncEntity(MesajRequest request)
         {
@@ -161,4 +169,6 @@ namespace StajyerProject.Data.Repository
 
 
     }
+
+
 }

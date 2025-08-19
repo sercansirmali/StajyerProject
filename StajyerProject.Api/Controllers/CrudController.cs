@@ -16,7 +16,24 @@ namespace StajyerProject.Api.Controllers
         public CrudController(IConfiguration configuration, CrudService crudService)
         {
             _configuration = configuration;
-            _crudService = _crudService;
+            _crudService = crudService;
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateMesaj([FromBody] MesajRequest request)
+        {
+            if (request == null)
+                return BadRequest("Mesaj verisi boş gönderildi.");
+
+            var result = await _crudService.CreateMesajAsync(request);
+
+            if (result.Success)
+                return Ok(result);
+            else
+                return StatusCode(500, result);
+
+
+
         }
 
         [HttpPost("ekle")]

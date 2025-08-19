@@ -1,10 +1,11 @@
-﻿using System;
+﻿using StajyerProject.Core.DTO;
+using StajyerProject.Core.Entity;
+using StajyerProject.Data.Repository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using StajyerProject.Core.DTO;
-using StajyerProject.Data.Repository;
 
 namespace StajyerProject.Service
 {
@@ -15,6 +16,11 @@ namespace StajyerProject.Service
         public CrudService(CrudRepository crudRepository)
         {
             _crudRepository = crudRepository;
+        }
+
+        public async Task<ApiResponse<MesajResponse>> CreateMesajAsync(MesajRequest request)
+        {
+            return await _crudRepository.CreateAsyncEntity(request);
         }
 
         public async Task<int> AddMesajAsync(MesajResponse model)

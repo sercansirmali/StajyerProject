@@ -15,4 +15,8 @@
     <ProjectReference Include="..\StajyerProject.Service\StajyerProject.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>
