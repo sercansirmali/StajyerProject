@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StajyerProject.Core.DTO;
+using StajyerProject.Core.Entity;
 using StajyerProject.Service;
 
 namespace StajyerProject.Api.Controllers
@@ -9,14 +10,15 @@ namespace StajyerProject.Api.Controllers
     [ApiController]
     public class CrudController : ControllerBase
     {
-
+        private readonly IWebHostEnvironment _environment;
         private readonly IConfiguration _configuration;
         private readonly CrudService _crudService;
 
-        public CrudController(IConfiguration configuration, CrudService crudService)
+        public CrudController(IConfiguration configuration, CrudService crudService, IWebHostEnvironment environment)
         {
             _configuration = configuration;
             _crudService = crudService;
+            _environment = environment;
         }
 
         [HttpPost("create")]
@@ -107,6 +109,61 @@ namespace StajyerProject.Api.Controllers
             else
                 return StatusCode(500, result);
         }
+
+
+
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadFile([FromForm] DosyaRequest request)
+        {
+            var response = new ApiResponse<bool>();
+
+            try
+            {
+                if (request.Dosya == null || request.Dosya.Length == 0)
+                {
+                    response.Success = false;
+                    response.Message = "Dosya seçilmedi.";
+                    return BadRequest(response);
+                }
+
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.Dosya.FileName);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                // Save file to disk
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await request.Dosya.CopyToAsync(stream);
+                }
+
+                // Veritabanına kaydet (opsiyonel)
+                var dosya = new DosyaResponse
+                {
+                    Dosya = uniqueFileName,
+                    Adres = request.Adres,
+                    Tarih = DateTime.Now
+                };
+
+                var result = await _crudService.AddDosyaAsync(dosya);
+
+                response.Success = true;
+                response.Message = "Dosya başarıyla yüklendi.";
+                response.Data = result > 0;
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = "Dosya yüklenirken hata oluştu.";
+                response.Errors.Add(ex.Message);
+                return StatusCode(500, response);
+            }
+        }
+
 
     }
 }

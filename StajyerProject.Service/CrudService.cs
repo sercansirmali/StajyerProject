@@ -117,5 +117,11 @@ namespace StajyerProject.Service
 
             return response;
         }
+
+        public async Task<int> AddDosyaAsync(DosyaResponse dosya)
+        {
+            return await _crudRepository.AddDosyaAsync(dosya);
+        }
+
     }
 }

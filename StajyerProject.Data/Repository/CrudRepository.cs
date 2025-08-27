@@ -282,6 +282,26 @@ namespace StajyerProject.Data.Repository
             }
         }
 
+        public async Task<List<DosyaResponse>> GetDosyalarAsync()
+        {
+            const string query = @"SELECT id, dosya, adres, tarih FROM StajyerDb.dbo.dt_dosya";
+
+            using var connection = _dbContext.CreateConnection();
+            var result = await connection.QueryAsync<DosyaResponse>(query);
+            return result.ToList();
+        }
+
+        public async Task<int> AddDosyaAsync(DosyaResponse dosya)
+        {
+            var query = @"
+        INSERT INTO dt_dosya (dosya, adres, tarih)
+        VALUES (@Dosya, @Adres, @Tarih);
+        SELECT CAST(SCOPE_IDENTITY() as int);";
+
+            using var connection = _dbContext.CreateConnection();
+            return await connection.ExecuteScalarAsync<int>(query, dosya);
+        }
+
     }
 
 

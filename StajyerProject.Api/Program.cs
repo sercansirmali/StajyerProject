@@ -27,6 +27,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // 🔹 Repository ve servisleri DI konteynerine ekleyin
 builder.Services.AddScoped<CrudRepository>();
 builder.Services.AddScoped<CrudService>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
