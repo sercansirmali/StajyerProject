@@ -164,6 +164,20 @@ namespace StajyerProject.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Mesaj kayıtlarını listeler.
+        /// </summary>
+        [HttpGet("mesajlar")]
+        public async Task<ActionResult<ApiResponse<List<MesajResponse>>>> GetMesajlarAsync(CancellationToken ct)
+        {
+            var result = await _crudService.GetAllAsyncEntities(ct);
+
+            if (!result.Success)
+                return StatusCode(StatusCodes.Status500InternalServerError, result);
+
+            return Ok(result);
+        }
+
 
     }
 }

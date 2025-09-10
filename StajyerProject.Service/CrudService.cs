@@ -1,4 +1,5 @@
-﻿using StajyerProject.Core.DTO;
+﻿using Microsoft.EntityFrameworkCore;
+using StajyerProject.Core.DTO;
 using StajyerProject.Core.Entity;
 using StajyerProject.Data.Repository;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace StajyerProject.Service
 {
- 
+
     public class CrudService
     {
         private readonly CrudRepository _crudRepository;
@@ -123,5 +124,23 @@ namespace StajyerProject.Service
             return await _crudRepository.AddDosyaAsync(dosya);
         }
 
+        /// <summary>
+        /// Mesajları listeler (Repository'deki GetAllAsyncEntities'i kullanır)
+        /// </summary>
+        public async Task<ApiResponse<List<MesajResponse>>> GetAllAsyncEntities(CancellationToken ct = default)
+        {
+      
+            var result = await _crudRepository.GetAllAsyncEntities();
+
+            // Örn: Tarih'e göre sıralamak istersen:
+            if (result.Success && result.Data is not null)
+            {
+                result.Data = result.Data
+                    .OrderByDescending(x => x.Tarih) // MesajResponse içinde Tarih var
+                    .ToList();
+            }
+
+            return result;
+        }
     }
 }
