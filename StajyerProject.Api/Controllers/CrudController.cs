@@ -178,6 +178,29 @@ namespace StajyerProject.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Id'ye göre mesaj silme.
+        /// 200 OK: başarı
+        /// 404 NotFound: kayıt yok
+        /// 500: silme hatası
+        /// </summary>
+        [HttpDelete("mesajlar/{id:int}")]
+        public async Task<ActionResult<ApiResponse<MesajResponse>>> DeleteMesajAsync(int id)
+        {
+            var result = await _crudService.DeleteMesajAsync(id);
+
+            if (!result.Success)
+            {
+                // Repository "Message not found." ile döndüyse 404 verelim
+                if (string.Equals(result.Message, "Message not found.", StringComparison.OrdinalIgnoreCase))
+                    return NotFound(result);
+
+                return StatusCode(StatusCodes.Status500InternalServerError, result);
+            }
+
+            return Ok(result);
+        }
+
 
     }
 }

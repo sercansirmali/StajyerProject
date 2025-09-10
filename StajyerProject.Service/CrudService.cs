@@ -142,5 +142,16 @@ namespace StajyerProject.Service
 
             return result;
         }
+
+        /// <summary>
+        /// Id'ye göre mesajı siler.
+        /// Repository: DeleteAsyncEntity(int id)
+        /// </summary>
+        public async Task<ApiResponse<MesajResponse>> DeleteMesajAsync(int id)
+        {
+            // Repository zaten try/catch ve ApiResponse ile dönüyor
+            var result = await _crudRepository.DeleteAsyncEntity(id);
+            return result;
+        }
     }
 }
